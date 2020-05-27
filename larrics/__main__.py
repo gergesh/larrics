@@ -46,13 +46,22 @@ class LyricsFetcher:
         return artist, title, duration
 
     def write_lyrics(self, audio_file: Path, lrcs: lyrics.Lyrics):
-        if lrcs.synchronized:
+        written = 0
+
+        lrc_file = audio_file.with_suffix('.lrc')
+        if lrcs.synchronized and not lrc_file.is_file() or self.force:
             audio_file.with_suffix('.lrc').write_text(lrcs.synchronized)
+            written += 2
+
         if lrcs.unsynchronized:
             f = taglib.File(str(audio_file))
-            f.tags['LYRICS'] = [lrcs.unsynchronized]
-            f.save()
+            if not f.tags.get('LYRICS') or self.force:
+                f.tags['LYRICS'] = [lrcs.unsynchronized]
+                f.save()
+                written += 1
             f.close()
+
+        return written
 
     @staticmethod
     def has_lyrics(audio_file: Path) -> bool:
@@ -77,9 +86,11 @@ class LyricsFetcher:
             lrcs = self.get_lyrics(artist, title, duration)
             if lrcs.synchronized and not lrcs.unsynchronized:
                 lrcs.unsynchronized = lyrics.strip_timestamps(lrcs.synchronized)
+            written = self.write_lyrics(c, lrcs)
             if self.verbose:
-                print(f'Writing {lrcs.describe()} lyrics for {title} by {artist}')
-            self.write_lyrics(c, lrcs)
+                print(
+                    f'Wrote {["no", "unsynchronized", "synchronized", "both"][written]} lyrics for {title} by {artist}'
+                )
 
 
 def parse_args():

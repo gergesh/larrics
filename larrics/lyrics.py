@@ -14,11 +14,6 @@ class Lyrics:
             self.synchronized or other.synchronized,
         )
 
-    def describe(self):
-        return ['no', 'unsynchronized', 'synchronized', 'both'][
-            bool(self.unsynchronized) + bool(self.synchronized) * 2
-        ]
-
 
 def strip_timestamps(lrc):
     return re.sub(r'\[[\d\.:]+\] *', '', lrc).strip()
