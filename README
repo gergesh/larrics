@@ -1,0 +1,16 @@
+larrics - pirate lyrics fetcher
+===============================
+A tool for fetching lyrics from various sources.
+
+Requirements
+------------
+- python >= 3.6
+- requests
+- pytaglib
+
+Usage
+-----
+Copy your tokens into the larrics.ini file in your config directory
+and re-order them as you wish (most to least trustworthy), then run
+
+    python -m larrics
