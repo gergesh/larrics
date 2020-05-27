@@ -7,7 +7,7 @@ from urllib.parse import urlencode
 
 import requests
 
-from ..lyrics import Lyrics
+from ..lyrics import Lyrics, strip_leading_spaces
 from .provider import Provider
 
 
@@ -52,9 +52,11 @@ class MusixMatch(Provider):
 
         lyrics = Lyrics()
         with contextlib.suppress(KeyError, TypeError):
-            lyrics.synchronized = js['message']['body']['macro_calls'][
-                'track.subtitles.get'
-            ]['message']['body']['subtitle_list'][0]['subtitle']['subtitle_body']
+            lyrics.synchronized = strip_leading_spaces(
+                js['message']['body']['macro_calls']['track.subtitles.get']['message'][
+                    'body'
+                ]['subtitle_list'][0]['subtitle']['subtitle_body']
+            )
         with contextlib.suppress(KeyError, TypeError):
             lyrics.unsynchronized = js['message']['body']['macro_calls'][
                 'track.lyrics.get'

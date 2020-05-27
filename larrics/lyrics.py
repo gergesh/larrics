@@ -17,3 +17,7 @@ class Lyrics:
 
 def strip_timestamps(lrc):
     return re.sub(r'\[[\d\.:]+\] *', '', lrc).strip()
+
+
+def strip_leading_spaces(lrc):
+    return re.sub(r'(\[[\d\.:]+\]) *', r'\g<1>', lrc).strip()
