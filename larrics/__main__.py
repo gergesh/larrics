@@ -86,11 +86,14 @@ class LyricsFetcher:
             lrcs = self.get_lyrics(artist, title, duration)
             if lrcs.synchronized and not lrcs.unsynchronized:
                 lrcs.unsynchronized = lyrics.strip_timestamps(lrcs.synchronized)
-            written = self.write_lyrics(c, lrcs)
+            labels = ['no', 'unsynchronized', 'synchronized', 'both']
             if self.verbose:
                 print(
-                    f'Wrote {["no", "unsynchronized", "synchronized", "both"][written]} lyrics for {title} by {artist}'
+                    f'Found {labels[bool(lrcs.unsynchronized) + bool(lrcs.synchronized) * 2]} lyrics for {title} by {artist}'
                 )
+            written = self.write_lyrics(c, lrcs)
+            if self.verbose:
+                print(f'Wrote {labels[written]} lyrics for {title} by {artist}')
 
 
 def parse_args():
