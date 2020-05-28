@@ -49,13 +49,13 @@ class LyricsFetcher:
         written = 0
 
         lrc_file = audio_file.with_suffix('.lrc')
-        if lrcs.synchronized and not lrc_file.is_file() or self.force:
+        if lrcs.synchronized and (self.force or not lrc_file.is_file()):
             audio_file.with_suffix('.lrc').write_text(lrcs.synchronized)
             written += 2
 
         if lrcs.unsynchronized:
             f = taglib.File(str(audio_file))
-            if not f.tags.get('LYRICS') or self.force:
+            if self.force or not f.tags.get('LYRICS'):
                 f.tags['LYRICS'] = [lrcs.unsynchronized]
                 f.save()
                 written += 1
