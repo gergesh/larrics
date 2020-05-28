@@ -6,6 +6,7 @@ from .provider import Provider
 
 class Genius(Provider):
     name = 'genius'
+    synchronized = False
 
     def __init__(self, config_entry):
         remove_section_headers = config_entry.getboolean(

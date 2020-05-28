@@ -24,6 +24,9 @@ class LyricsFetcher:
     def get_lyrics(self, artist: str, title: str, duration: int) -> lyrics.Lyrics:
         lrcs = lyrics.Lyrics()
         for provider in self.pm.providers:
+            # Skip over providers with only unsynchronized content if we already have it
+            if lrcs.unsynchronized and not provider.synchronized:
+                continue
             lrcs += provider.get_lyrics(artist, title, duration)
             if lrcs.synchronized:
                 break

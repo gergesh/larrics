@@ -13,6 +13,7 @@ from .provider import Provider
 
 class MusixMatch(Provider):
     name = 'musixmatch'
+    synchronized = True
 
     def __init__(self, config_entry):
         self.token = config_entry['token']
