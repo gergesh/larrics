@@ -1,6 +1,7 @@
 from configparser import ConfigParser
 from typing import List
 
+from .genius import Genius
 from .musixmatch import MusixMatch
 from .provider import Provider
 from .quicklyric import QuickLyric
