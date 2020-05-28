@@ -18,6 +18,8 @@ class Genius(Provider):
         )
 
     def get_lyrics(self, artist: str, title: str, _: int) -> Lyrics:
-        return Lyrics(
-            self.genius.search_song(title, artist, get_full_info=False).lyrics, None
-        )
+        lyrics = Lyrics()
+        song = self.genius.search_song(title, artist, get_full_info=False)
+        if song:
+            lyrics.unsynchronized = song.lyrics
+        return lyrics
