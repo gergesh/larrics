@@ -47,7 +47,7 @@ class QuickLyric(Provider):
     @staticmethod
     def _get_signature(params: str, hmac_init: bytes) -> bytes:
         now = dt.datetime.now(dt.timezone.utc)
-        dat = f'{params}{now.year}{now.month:02}{now.day:02}'
+        dat = f'{params}{now.strftime("%Y%m%d")}'
         mac = hmac.new(hmac_init, dat.encode('utf-8'), sha1)
         return b64encode(mac.digest()).rstrip(b'=')
 
