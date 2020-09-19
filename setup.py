@@ -14,6 +14,6 @@ setuptools.setup(
     url='https://github.com/gergesh/larrics',
     packages=setuptools.find_packages(),
     python_requires='>=3.6',
-    install_requires=['pytaglib', 'requests'],
+    install_requires=['lyricsgenius', 'pytaglib', 'requests'],
     entry_points={'console_scripts': ['larrics=larrics.__main__:main'],},
 )
