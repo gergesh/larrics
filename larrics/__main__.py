@@ -2,6 +2,7 @@ import argparse
 import os
 from configparser import ConfigParser
 from pathlib import Path
+from enum import IntFlag
 from typing import Tuple
 
 import taglib
@@ -9,6 +10,11 @@ import taglib
 from . import lyrics
 from .providers.manager import ProvidersManager
 
+class WriteStatus(IntFlag):
+    NONE = 0
+    UNSYNCHRONIZED = 1
+    SYNCHRONIZED = 2
+    BOTH = 3
 
 class LyricsFetcher:
     AUDIO_EXTENSIONS = set(['.flac', '.mp3', '.ogg', '.opus', '.m4a'])
@@ -48,20 +54,20 @@ class LyricsFetcher:
         f.close()
         return artist, title, duration
 
-    def write_lyrics(self, audio_file: Path, lrcs: lyrics.Lyrics):
-        written = 0
+    def write_lyrics(self, audio_file: Path, lrcs: lyrics.Lyrics) -> WriteStatus:
+        written = WriteStatus.NONE
 
         lrc_file = audio_file.with_suffix('.lrc')
         if lrcs.synchronized and (self.force or not lrc_file.is_file()):
             audio_file.with_suffix('.lrc').write_text(lrcs.synchronized)
-            written += 2
+            written |= WriteStatus.SYNCHRONIZED
 
         if lrcs.unsynchronized:
             f = taglib.File(str(audio_file))
             if self.force or not f.tags.get('LYRICS'):
                 f.tags['LYRICS'] = [lrcs.unsynchronized]
                 f.save()
-                written += 1
+                written |= WriteStatus.UNSYNCHRONIZED
             f.close()
 
         return written

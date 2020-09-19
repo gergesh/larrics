@@ -1,5 +1,6 @@
 import datetime as dt
 import hmac
+from typing import Optional, List
 from base64 import b64encode
 from hashlib import sha1
 
@@ -52,7 +53,7 @@ class QuickLyric(Provider):
         return b64encode(mac.digest()).rstrip(b'=')
 
     @staticmethod
-    def _lrc_from_lines(lines: []) -> str:
+    def _lrc_from_lines(lines: Optional[List[dict]]) -> Optional[str]:
         if not lines:
             return None
         return '\n'.join(f'[{l["timing"]}]{l["text"]}' for l in lines)
