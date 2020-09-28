@@ -17,6 +17,7 @@ class MusixMatch(Provider):
 
     def __init__(self, config_entry):
         self.token = config_entry['token']
+        self.s = requests.Session()
 
     def get_lyrics(self, artist: str, title: str, duration: int) -> Lyrics:
         url = 'https://apic.musixmatch.com/ws/1.1/macro.subtitles.get'
@@ -46,7 +47,7 @@ class MusixMatch(Provider):
         signature = b64encode(hmac.new(bytes2, bytes1, sha1).digest())
         newrl += '&' + urlencode({'signature': signature}) + '&signature_protocol=sha1'
 
-        js = requests.get(newrl).json()
+        js = self.s.get(newrl).json()
 
         if js['message']['header']['status_code'] == 401:
             raise Exception('MusixMatch: Got a 401 response')
