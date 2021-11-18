@@ -26,6 +26,7 @@ class LyricsFetcher:
         self.pm = ProvidersManager(config, args.providers)
         self.force = args.force
         self.verbose = args.verbose
+        self.use_album_artist = args.use_album_artist
 
     def get_lyrics(self, artist: str, title: str, duration: int) -> lyrics.Lyrics:
         lrcs = lyrics.Lyrics()
@@ -43,7 +44,9 @@ class LyricsFetcher:
         title = f.tags['TITLE'][0]
         artists = f.tags['ARTIST']
         album_artists = f.tags['ALBUMARTIST']
-        if len(artists) == 1:
+        if album_artists and self.use_album_artist:
+            artist = album_artists[0]
+        elif len(artists) == 1:
             artist = artists[0]
         elif len(album_artists) == 1 and album_artists[0] in artists:
             artist = album_artists[0]
@@ -110,6 +113,12 @@ def parse_args():
         prog='larrics', description='pirate lyrics fetcher'
     )
     parser.add_argument('-v', '--verbose', action='store_true')
+    parser.add_argument(
+        "-aa",
+        "--use-album-artist",
+        action="store_true",
+        help="use album artist for searching lyrics",
+    )
     parser.add_argument(
         '-f',
         '--force',
