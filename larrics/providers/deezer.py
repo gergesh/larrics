@@ -1,4 +1,7 @@
+import contextlib
+
 from pydeezer import Deezer as PyDeezer
+from pydeezer.exceptions import APIRequestError
 
 from ..lyrics import Lyrics
 from .provider import Provider
@@ -19,16 +22,17 @@ class Deezer(Provider):
         ]
 
         if tracks:
-            track_lyrics = self.client.get_track_lyrics(tracks[0]["id"])["info"]
-            lyrics.unsynchronized = track_lyrics.get("LYRICS_TEXT")
-            if lyrics.unsynchronized:
-                lyrics.unsynchronized = lyrics.unsynchronized.replace("\r\n", "\n")
-            if lyrics_sync_json := track_lyrics.get("LYRICS_SYNC_JSON"):
-                lyrics_sync_json = [x for x in lyrics_sync_json if x.get("line")]
-                lyrics_sync_json.sort(key=lambda x: int(x["milliseconds"]))
-                lyrics.synchronized = "".join(
-                    f"{line['lrc_timestamp']} {line['line']}\n"
-                    for line in lyrics_sync_json
-                )
+            with contextlib.suppress(APIRequestError):
+                track_lyrics = self.client.get_track_lyrics(tracks[0]["id"])["info"]
+                lyrics.unsynchronized = track_lyrics.get("LYRICS_TEXT")
+                if lyrics.unsynchronized:
+                    lyrics.unsynchronized = lyrics.unsynchronized.replace("\r\n", "\n")
+                if lyrics_sync_json := track_lyrics.get("LYRICS_SYNC_JSON"):
+                    lyrics_sync_json = [x for x in lyrics_sync_json if x.get("line")]
+                    lyrics_sync_json.sort(key=lambda x: int(x["milliseconds"]))
+                    lyrics.synchronized = "".join(
+                        f"{line['lrc_timestamp']} {line['line']}\n"
+                        for line in lyrics_sync_json
+                    )
 
         return lyrics
