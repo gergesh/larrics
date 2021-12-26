@@ -1,3 +1,4 @@
 lyricsgenius
 pytaglib
 requests
+py-deezer
