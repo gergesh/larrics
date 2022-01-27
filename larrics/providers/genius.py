@@ -1,3 +1,5 @@
+import re
+
 from lyricsgenius import Genius as LyrGenius
 
 from ..lyrics import Lyrics
@@ -21,6 +23,13 @@ class Genius(Provider):
     def get_lyrics(self, artist: str, title: str, _: int) -> Lyrics:
         lyrics = Lyrics()
         song = self.genius.search_song(title, artist, get_full_info=False)
-        if song:
+        if song and song.lyrics:
+            title_line = f"{song.title} Lyrics"
+            if song.lyrics.startswith(title_line):
+                song.lyrics = song.lyrics.removeprefix(title_line)
+
+            if m := re.search(r'((\d+\.)?\d+K?)?(Embed)?$', song.lyrics):
+                song.lyrics = song.lyrics.removesuffix(m.group())
+
             lyrics.unsynchronized = song.lyrics
         return lyrics
